@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>หาคนเมา</title>
+    <link rel="stylesheet" href="style_g1.css">
+</head>
+<body>
+
+<div class="main-wrapper">
+    <h1>สุ่มหาคนเมา🎲</h1>
+    <a href="https://nincandy-ny.github.io/hpny2026/" style="text-decoration: none; color: #aaa; font-size: 0.9rem;">🏠 กลับหน้าหลัก</a>
+
+    <div id="setup-area" class="card">
+        <h3>👥 ตั้งค่ารายชื่อ</h3>
+        <div id="name-list-inputs" class="inputs-grid"></div>
+        
+        <div class="setup-controls">
+            <button id="add-name-btn" class="btn-add">+ เพิ่มรายชื่อ</button>
+            <div class="cup-range">
+                สุ่มแก้ว: <input type="number" id="min-cups" value="1"> - <input type="number" id="max-cups" value="5">
+            </div>
+
+            <div class="save-container">
+                <button onclick="saveAndHide()" class="btn-save">💾 บันทึกและเริ่ม</button>
+            </div>
+            
+            <button onclick="resetOnlyStats()" class="btn-reset-stats">🔄 รีเซ็ตสถิติและประวัติ</button>
+        </div>
+    </div>
+
+    <button id="edit-mode-btn" class="btn-edit hidden" onclick="showSetup()">⚙️ แก้ไขรายชื่อ</button>
+
+    <div class="horizontal-layout">
+        <div class="display-section card">
+            <div class="result-box">
+                <p id="cup-count"></p>
+            </div>
+            <div class="result-box">
+    <h2 id="winner-name" class="pl">พร้อมสุ่ม!</h2>
+    <p id="cup-count"></p>
+</div>
+
+<button id="spin-btn" class="btn-primary">สุ่มหาคนดวงซวย</button>
+
+<button id="spin-cups-btn" class="btn-primary hidden" style="background: #ec4899; margin-top: 10px;">สุ่มจำนวนแก้ว</button>
+        </div>
+
+        <div class="data-section">
+            <div class="history-card card">
+                <h3>📜 3 ครั้งล่าสุด</h3>
+                <ul id="history-list"></ul>
+            </div>
+
+            <div class="stats-card card">
+                <h3>📊 ยอดรวมแก้ว</h3>
+                <table>
+                    <tbody id="stats-body"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="script_g1.js"></script>
+</body>
+</html>

@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>POK DENG PRO - Online</title>
+    <link rel="stylesheet" href="style_g5.css">
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;600&family=Montserrat:wght@700&display=swap" rel="stylesheet">
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+</head>
+<body>
+    <div class="main-wrapper">
+        <div class="glass-container">
+            <header class="game-header">
+                <div class="logo-section">
+                    <h1>POK DENG <span class="pro-tag">PRO</span></h1>
+                </div>
+                <button class="exit-btn" onclick="window.location.href='https://nincandy-ny.github.io/hpny2026/'">ออกจากห้อง</button>
+            </header>
+
+            <div id="room-id-display" class="room-banner" style="display: none;">
+                <span class="label">ROOM ID</span>
+                <h2 id="current-room-text">-</h2>
+            </div>
+
+            <section id="room-controls" class="fade-in">
+                <div class="input-group">
+                    <input type="text" id="playerName" placeholder="ชื่อผู้เล่น" class="input-main">
+                    <div class="action-grid">
+                        <button onclick="createRoom()" class="btn-main glow-gold">สร้างห้องใหม่</button>
+                        <button onclick="joinRoom()" class="btn-sub">เข้าร่วม</button>
+                    </div>
+                    <input type="text" id="roomInput" placeholder="กรอกรหัสห้อง" class="input-main room-input-style">
+                </div>
+            </section>
+
+            <section id="game-info" style="display:none;" class="fade-in">
+                <div id="player-list-container" class="player-chips"></div>
+                
+                <div class="game-table">
+                    <div id="dealer-area">
+                        <div class="area-label">DEALER</div>
+                        <div id="dealer-score-label" class="score-badge">เจ้ามือ</div>
+                        <div id="dealer-cards" class="hand-display"></div>
+                    </div>
+
+                    <div id="table-announcement" class="announcement-card" style="display:none;">
+                        <h2 id="win-status"></h2>
+                        <div id="winner-info"></div>
+                        <button id="hostResetBtn" onclick="startCountdown()" class="btn-main pulse" style="display:none;">เริ่มเกมถัดไป</button>
+                    </div>
+                </div>
+
+                <div class="my-section">
+                    <div class="section-header">
+                        <div class="score-info">
+                            แต้มของคุณ: <span id="my-score" class="text-gold">0</span>
+                            <span id="pok-label" class="pok-badge"></span>
+                        </div>
+                        <div id="action-hint" class="hint-text">รอตาของคุณ...</div>
+                    </div>
+                    <div id="cards-container" class="hand-display my-hand"></div>
+                </div>
+
+                <div id="player-actions" class="action-bar" style="display:none;">
+                    <button id="drawBtn" onclick="drawCard()" class="btn-action draw">จั่วไพ่</button>
+                    <button id="stayBtn" onclick="stay()" class="btn-action stay">อยู่</button>
+                </div>
+
+                <div id="host-panel" style="display:none;">
+                    <button onclick="startCountdown()" class="btn-main" style="width:100%; margin-top:15px;">🎮 แจกไพ่</button>
+                </div>
+            </section>
+        </div>
+    </div>
+    <script src="script_g5.js"></script>
+</body>
+</html>

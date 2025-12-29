@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>KANG - Online Card Game</title>
+    <link rel="stylesheet" href="style_g4.css">
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;600&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="glass-container">
+        <header style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+            <div>
+                <h2 style="margin:0; font-size: 1.2rem; color: var(--primary); text-shadow: 0 0 10px rgba(241,196,15,0.3);">KANG</h2>
+                <div id="room-id-display" style="font-size: 0.7rem; color: #fff; display: none; margin-top: 3px;">
+                    <span style="opacity:0.6;">ROOM:</span> <span id="current-room-text" style="color:var(--primary)">-</span>
+                </div>
+            </div>
+            <button onclick="window.location.href='https://nincandy-ny.github.io/hpny2026/'" style="background:rgba(255,255,255,0.05); color:#fff; font-size:0.7rem; border:1px solid rgba(255,255,255,0.1); padding: 5px 12px; border-radius: 8px; cursor: pointer;">🏠 Exit</button>
+        </header>
+
+        <section id="room-controls">
+            <input type="text" id="playerName" placeholder="ใส่ชื่อของคุณ..." style="width:100%; padding:10px; margin-bottom:12px; border-radius:12px; background:rgba(255,255,255,0.05); color:white; border:1px solid rgba(255,255,255,0.1); outline:none; font-size: 0.9rem; box-sizing: border-box;">
+            
+            <button onclick="createRoom()" class="btn-main" style="margin-bottom:12px;">✨ สร้างโต๊ะใหม่</button>
+            <div style="display:flex; gap:8px;">
+                <input type="text" id="roomInput" placeholder="รหัสห้อง" style="flex:1; padding:10px; border-radius:12px; background:rgba(255,255,255,0.05); color:white; border:1px solid rgba(255,255,255,0.1); text-align:center; font-size: 0.9rem;">
+                <button onclick="joinRoom()" class="btn-sub" style="width:auto; padding: 0 20px;">เข้าเล่น</button>
+            </div>
+        </section>
+
+        <section id="game-info" style="display:none;">
+            <div id="player-list-container"></div>
+
+            <div id="table-area" class="table">
+                <div style="font-size:0.7rem; opacity:0.5; margin-bottom:8px;">🎴 กองกลางเหลือ: <span id="deck-count" style="color:var(--primary)">0</span></div>
+                <div id="discard-pile" style="font-size: 3.5rem; margin: 15px 0; text-shadow: 0 0 20px rgba(255,255,255,0.2);">🃏</div>
+                <div id="turn-status" style="font-size:0.8rem; letter-spacing:1px;"></div>
+
+                <div id="table-announcement" style="display:none;">
+                    <h2 style="margin:0; color:var(--primary);">🏆 WINNER!</h2>
+                    <div id="winner-info" style="margin:15px 0; font-size:1.2rem; font-weight:600;"></div>
+                    <button id="hostResetBtn" onclick="startGame()" class="btn-main" style="display:none;">เล่นต่อรอบถัดไป</button>
+                </div>
+            </div>
+
+            <div id="my-hand-section">
+                <div style="display:flex; justify-content:space-between; font-size:0.8rem; margin-bottom:10px; border-bottom:1px solid rgba(255,255,255,0.05); padding-bottom:5px;">
+                    <span>ไพ่ของคุณ (<span id="my-score" style="color:var(--primary)">0</span> แต้ม)</span>
+                    <span id="action-hint" style="color:var(--secondary); font-weight:600;">...</span>
+                </div>
+                <div id="cards-container" class="hand" style="display:flex; justify-content:center; flex-wrap:wrap; min-height:100px;"></div>
+            </div>
+
+            <div id="player-actions" style="margin-top:20px; display:none; flex-direction:column; gap:10px;">
+                <div id="pre-draw-actions" style="display:flex; gap:10px;">
+                    <button id="drawBtn" onclick="drawCard()" class="btn-sub">จั่วไพ่</button>
+                    <button id="kangBtn" onclick="kang()" class="btn-main" style="flex:0.5;">แคง!</button>
+                </div>
+                <button id="discardBtn" onclick="confirmDiscard()" class="btn-danger" style="display:none; box-shadow: 0 0 20px rgba(231, 76, 60, 0.3);">🔥 ทิ้งไพ่ที่เลือก (<span id="select-count">0</span>)</button>
+            </div>
+
+            <div id="host-panel" style="display:none; margin-top:20px;">
+                <button onclick="startGame()" class="btn-main" style="background:var(--success); color:white;">🎮 เริ่มเกม (เจ้ามือ)</button>
+            </div>
+        </section>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+    <script src="script_g4.js"></script>
+</body>
+</html>

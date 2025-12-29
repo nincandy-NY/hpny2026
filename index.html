@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Party Game Center</title>
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #ff007f;
+            --secondary: #00d4ff;
+            --accent: #7000ff;
+            --bg: #0f0c29;
+            --kang: #f1c40f;
+            --pokdeng: #e74c3c; /* สีธีมสำหรับป๊อกเด้ง */
+        }
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Kanit', sans-serif;
+            background: radial-gradient(circle at center, #1e1e3f, #0c0c0c);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            padding: 40px 0;
+        }
+        h1 { font-size: 2.5rem; margin-bottom: 5px; text-align: center; background: linear-gradient(to right, var(--primary), var(--secondary)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        h2 { font-size: 1.5rem; margin-top: 0; margin-bottom: 30px; text-align: center; background: linear-gradient(to right, var(--primary), var(--secondary)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        
+        .menu-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            width: 90%;
+            max-width: 1000px;
+        }
+
+        .menu-card {
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            padding: 30px;
+            border-radius: 24px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            text-decoration: none;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .menu-card:hover {
+            transform: translateY(-10px);
+            background: rgba(255, 255, 255, 0.12);
+            border-color: var(--secondary);
+            box-shadow: 0 15px 35px rgba(0, 212, 255, 0.2);
+        }
+
+        /* Hover effect เฉพาะเกมแคง */
+        .menu-card.kang-card:hover {
+            border-color: var(--kang);
+            box-shadow: 0 15px 35px rgba(241, 196, 15, 0.2);
+        }
+
+        /* Hover effect เฉพาะป๊อกเด้ง */
+        .menu-card.pok-card:hover {
+            border-color: var(--pokdeng);
+            box-shadow: 0 15px 35px rgba(231, 76, 60, 0.3);
+        }
+
+        .icon { font-size: 3.5rem; margin-bottom: 15px; }
+        .title { font-size: 1.4rem; font-weight: 600; margin-bottom: 8px; }
+        .desc { font-size: 0.85rem; opacity: 0.7; line-height: 1.4; height: 3em; }
+        
+        .tag { font-size: 0.7rem; padding: 4px 12px; border-radius: 20px; margin-top: 15px; font-weight: bold; text-transform: uppercase; }
+        .tag.local { background: #475569; }
+        .tag.online { background: #2ecc71; color: #052e16; }
+        .tag.special { background: var(--primary); }
+        .tag.kang-tag { background: var(--kang); color: #000; }
+        .tag.pok-tag { background: var(--pokdeng); color: #fff; }
+
+        @media (max-width: 600px) {
+            h1 { font-size: 1.8rem; }
+            .menu-container { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+    <h1>PARTY HUB 🍻</h1>
+    <h2>Dev by nincandy</h2>
+
+    <div class="menu-container">
+        <a href="game1.html" class="menu-card">
+            <span class="icon">🎲</span>
+            <span class="title">สุ่มหาคนดวงซวย</span>
+            <span class="desc">สุ่มชื่อและจำนวนแก้ว เล่นจบในเครื่องเดียว ไม่ต้องใช้เน็ต</span>
+            <span class="tag local">Local Mode</span>
+        </a>
+
+        <a href="game2.html" class="menu-card">
+            <span class="icon">🔍</span>
+            <span class="title">สอบปากคำ</span>
+            <span class="desc">ตั้งคำถามออนไลน์ สุ่มผู้โชคดีมาตอบหรือดื่มพร้อมเพื่อน</span>
+            <span class="tag online">Online Multiplayer</span>
+        </a>
+
+        <a href="game3.html" class="menu-card">
+            <span class="icon">🃏</span>
+            <span class="title">เกมการ์ด Ohana</span>
+            <span class="desc">เปิดการ์ดท้าทายความมันส์ ใครที่คิดว่าเก่งก็ลองดู!</span>
+            <span class="tag special">Card Game</span>
+        </a>
+
+        <a href="game4.html" class="menu-card kang-card">
+            <span class="icon">🎴</span>
+            <span class="title">เกมแคง (KANG)</span>
+            <span class="desc">วัดใจคนแต้มน้อย ทิ้งไพ่ให้ไว ใครแคงก่อนชนะ!</span>
+            <span class="tag online kang-tag">Online Multiplayer</span>
+        </a>
+
+        <a href="game5.html" class="menu-card pok-card">
+            <span class="icon">🧧</span>
+            <span class="title">ป๊อกเด้ง PRO</span>
+            <span class="desc">เกมวัดดวงยอดฮิตในไทย รองรับระบบออนไลน์แบบเรียลไทม์</span>
+            <span class="tag online pok-tag">Online Multiplayer</span>
+        </a>
+    </div>
+
+</body>
+</html>

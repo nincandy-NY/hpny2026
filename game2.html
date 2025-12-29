@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>สอบปากคำ - Drinking Game</title>
+    <link rel="stylesheet" href="style_g2.css">
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;600&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="glass-container">
+        <header>
+            <button onclick="goHome()" class="btn-home" style="float: left; background: none; border: 1px solid var(--glass-border); color: #aaa; border-radius: 8px; font-size: 0.7rem; padding: 4px 8px;">🏠 Home</button>
+            <div style="clear: both;"></div>
+            <h1>สอบปากคำ</h1>
+            <p id="roomDisplayInfo" style="opacity: 0.6; font-size: 0.9rem;">เตรียมตัวให้พร้อมสำหรับความจริง</p>
+        </header>
+
+        <section id="room-controls">
+            <div class="input-group">
+                <input type="text" id="playerName" placeholder="ใส่ชื่อของคุณ">
+                <input type="number" id="actionLimit" placeholder="โควตาเขียนคำถาม (เช่น 3)" value="3">
+                <button onclick="createRoom()" class="btn-spin" style="margin: 0; font-size: 1rem; padding: 12px;">✨ สร้างห้องใหม่ (Host)</button>
+            </div>
+            <div class="divider"></div>
+            <div class="input-group">
+                <div class="row-group">
+                    <input type="text" id="roomInput" placeholder="รหัสห้อง 5 หลัก" style="text-transform: uppercase;">
+                    <button onclick="joinRoom()" class="btn-add" style="background: var(--primary); color: white;">เข้าร่วมห้อง</button>
+                </div>
+            </div>
+        </section>
+
+        <section id="game-info" style="display:none;">
+            <div id="roomHeader" style="background: rgba(255,255,255,0.05); padding: 15px; border-radius: 15px; margin-bottom: 10px;">
+                <h2 style="margin: 0; color: var(--secondary);">ห้อง: <span id="roomDisplay"></span></h2>
+                <p style="margin: 5px 0 0; font-size: 0.8rem;">คุณคือ: <span id="myRole" style="color: var(--primary); font-weight: bold;"></span></p>
+            </div>
+
+            <div id="actionStatus" style="text-align: center; margin-bottom: 15px; font-size: 0.9rem; color: var(--secondary);">
+                คำถามที่เหลือในระบบ: <span id="remainingActions">0</span> ข้อ
+            </div>
+
+            <div id="playerBadgeContainer" style="display:flex; flex-wrap:wrap; gap:5px; justify-content:center; margin-bottom:15px;"></div>
+
+            <div id="action-input-area"></div>
+
+            <div id="host-panel" style="display:none; margin-top: 10px;">
+                <div id="host-dashboard" style="background: rgba(0,0,0,0.2); padding: 12px; border-radius: 15px; margin-bottom: 10px; border: 1px solid var(--glass-border);">
+                    <p style="font-size: 0.85rem; margin-bottom: 8px; color: var(--secondary);">📊 เช็กความพร้อมผู้เล่น:</p>
+                    <div id="hostProgressList" style="font-size: 0.8rem; text-align: left;"></div>
+                    <p id="hostWarning" style="color: #ff4757; font-size: 0.75rem; margin-top: 8px; display: none; font-weight: bold;">⚠️ รอทุกคนส่งคำถามให้ครบ!</p>
+                </div>
+                <button id="startGameBtn" onclick="startGame()" class="btn-add" style="width:100%; margin-bottom:10px;">▶ เริ่มเกม</button>
+                <button onclick="resetStats()" style="background:none; border:none; color:#ff4757; font-size:0.8rem; cursor:pointer;">🔄 รีเซ็ตสถิติ</button>
+            </div>
+
+            <div id="countdown-overlay" style="display:none; font-size: 4rem; font-weight: bold; color: var(--secondary); margin: 20px 0; text-align: center;">3</div>
+
+            <div id="resultCard" class="result-card" style="display:none;">
+                <h3 style="color: var(--secondary); margin-top:0;">ผู้โชคดีคือ:</h3>
+                <h2 id="displayPlayer" style="font-size: 2rem; margin: 10px 0;">-</h2>
+                <div class="divider"></div>
+                <p id="displayAction" style="font-style: italic; font-size: 1.1rem; margin-bottom:15px;">-</p>
+                <div id="penaltyWarning" style="margin-bottom: 15px; color: #ff4757; font-weight: bold; display: none;">
+                    บทลงโทษ: <span id="actionPenaltyAmount">0</span> แก้ว!
+                </div>
+                <div id="decision-area" style="display: none; gap: 10px; justify-content: center;">
+                    <button onclick="handleDecision('answer')" class="btn-add" style="background: #2ecc71; color: white;">✅ ตอบคำถาม</button>
+                    <button onclick="handleDecision('drink')" class="btn-add" style="background: #ff4757; color: white;">🍺 ยอมดื่ม</button>
+                </div>
+                <div id="penaltyBox" class="penalty-box" style="display:none;">-</div>
+                <button id="resetRoomBtn" onclick="resetRoom()" class="btn-spin" style="display:none; background: var(--accent); margin-top: 15px;">🔄 เริ่มรอบใหม่</button>
+            </div>
+
+            <div id="history-panel" style="margin-top: 25px; border-top: 1px solid var(--glass-border); padding-top: 15px;">
+                <h4 style="text-align:left; font-size: 0.9rem; margin-bottom: 10px; opacity: 0.7;">🕒 ล่าสุดเมื่อครู่:</h4>
+                <div id="historyList"></div>
+            </div>
+
+            <div id="stats-panel" style="margin-top: 30px;">
+                <h4 style="text-align:left; margin-bottom:10px;">📊 สถิติการดื่มรวม (แก้ว)</h4>
+                <div id="statsList"></div>
+            </div>
+        </section>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyDrrsmj5cFXkjL3eEo6qUHUpta-Jq53VLE",
+            authDomain: "gameq-c5806.firebaseapp.com",
+            databaseURL: "https://gameq-c5806-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "gameq-c5806",
+            storageBucket: "gameq-c5806.firebasestorage.app",
+            messagingSenderId: "142899132022",
+            appId: "1:142899132022:web:eb9524ccd0aaf09b469157",
+            measurementId: "G-PP5F9ERPZH"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+    </script>
+    <script src="script_g2.js"></script>
+</body>
+</html>

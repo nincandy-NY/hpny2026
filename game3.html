@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OHANA Card Game - Ultimate Edition</title>
+    <link rel="stylesheet" href="style_g3.css">
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;500;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <div class="container">
+         <a href="https://nincandy-ny.github.io/hpny2026/" style="text-decoration: none; color: #aaa; font-size: 0.9rem;">🏠 กลับหน้าหลัก</a>
+        <header>
+            <h1>OHANA GAME</h1>
+            <p class="subtitle">แตะที่ไพ่เพื่อจั่ว!</p>
+        </header>
+
+        <div class="card-display" id="cardDisplay">
+            <div class="card-inner">
+                <span class="card-value">?</span>
+            </div>
+        </div>
+
+        <div class="rule-box">
+            <div class="rule-title" id="ruleTitle">เตรียมตัวให้พร้อม!</div>
+            <hr>
+            <div class="rule-desc" id="ruleDesc">ตกลงกติกา King และเริ่มสนุกกันเลย</div>
+        </div>
+
+        <div class="footer-info">
+            <div class="status-bar">
+                <span>เหลือไพ่: <strong id="cardCount">52</strong> ใบ</span>
+            </div>
+            <div class="controls">
+                <button id="resetBtn" class="secondary-btn" style="display: none;">เริ่มใหม่ / ล้างสำรับ</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="script_g3.js"></script>
+</body>
+</html>

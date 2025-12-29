@@ -1,0 +1,143 @@
+body { font-family: 'Kanit', sans-serif; background: #0c0c0c; margin: 0; padding: 20px; }
+.main-wrapper { max-width: 1000px; margin: auto; }
+h1 { text-align: center; color: #ffffff; }
+
+.card { background: white; padding: 20px; border-radius: 15px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); margin-bottom: 20px; }
+.hidden { display: none !important; }
+
+/* แนวนอน Layout */
+.horizontal-layout { display: flex; gap: 20px; align-items: flex-start; }
+.display-section { flex: 1.2; text-align: center; min-height: 300px; display: flex; flex-direction: column; justify-content: center; }
+.data-section { flex: 1; display: flex; flex-direction: column; gap: 20px; }
+
+/* ตั้งค่ารายชื่อ Grid */
+.inputs-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; margin-bottom: 15px; }
+.flex-row { display: flex; align-items: center; background: #f8fafc; padding: 5px; border-radius: 8px; }
+.flex-row input { border: none; background: transparent; width: 100%; outline: none; }
+
+/* ปุ่มต่างๆ */
+.btn-primary { width: 100%; padding: 20px; background: #6366f1; color: white; border: none; border-radius: 12px; font-size: 1.5rem; cursor: pointer; }
+.btn-save { background: #10b981; color: white; width: 50px; height: 50px; padding: 12px; border: none; border-radius: 8px; cursor: pointer;position: fixed; }
+.btn-edit { background: #64748b; color: white; border: none; padding: 8px 15px; border-radius: 20px; cursor: pointer; margin-bottom: 10px; }
+.btn-add { background: #e2e8f0; border: none; padding: 8px; border-radius: 8px; cursor: pointer; width: 100%; margin-bottom: 10px; }
+
+/* ตารางและประวัติ */
+table { width: 100%; border-collapse: collapse; }
+td { padding: 8px; border-bottom: 1px solid #f1f5f9; }
+#history-list { list-style: none; padding: 0; margin: 0; font-size: 0.9rem; color: #475569; }
+
+.result-box h2 { font-size: 2.5rem; margin: 0; color: #1e293b; }
+.result-box p { font-size: 1.5rem; color: #ec4899; font-weight: bold; }
+.setup-controls {
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* จัดทุกอย่างในคอลัมน์ให้อยู่ตรงกลาง */
+    gap: 15px;
+    margin-top: 20px;
+}
+
+.save-container {
+    width: 100%;
+    display: flex;
+    justify-content: center; /* จัดปุ่มให้อยู่กึ่งกลางแนวนอน */
+}
+
+.btn-save {
+    background: #10b981;
+    color: white;
+    width: 250px; /* กำหนดความกว้างปุ่มให้ดูสวยงาม */
+    padding: 15px;
+    border: none;
+    border-radius: 30px; /* ทำปุ่มให้โค้งมนดูเด่นขึ้น */
+    font-size: 1.1rem;
+    font-weight: bold;
+    cursor: pointer;
+    box-shadow: 0 4px 10px rgba(16, 185, 129, 0.3);
+    transition: transform 0.2s;
+}
+
+.btn-save:hover {
+    transform: scale(1.05);
+    background: #059669;
+}
+
+.btn-add {
+    background: #6366f1;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.cup-range {
+    background: #f1f5f9;
+    padding: 10px 20px;
+    border-radius: 10px;
+    font-weight: bold;
+}
+
+.cup-range input {
+    width: 45px;
+    text-align: center;
+    border: 1px solid #cbd5e1;
+    border-radius: 4px;
+}
+.btn-reset-stats {
+    background: none;
+    color: #ef4444;
+    border: 1px solid #ef4444;
+    padding: 8px 15px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 0.85rem;
+    margin-top: 50px;
+    transition: all 0.2s;
+}
+
+.btn-reset-stats:hover {
+    background: #ef4444;
+    color: white;
+}
+
+/* ปรับความกว้างของประวัติให้กระชับขึ้น */
+#history-list li {
+    padding: 8px 0;
+    border-bottom: 1px solid #f1f5f9;
+    display: flex;
+    justify-content: space-between;
+}
+/* ค้นหาและแก้ไข .result-box h2 (ชื่อคน) */
+.result-box h2 {
+    font-size: 4rem; /* ขยายขนาดชื่อให้ใหญ่มาก */
+    margin: 10px 0;
+    color: #1e293b;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+    word-break: break-word;
+}
+
+/* ค้นหาและแก้ไข .result-box p (จำนวนแก้ว) */
+.result-box p {
+    font-size: 3.5rem; /* ขยายขนาดตัวเลขแก้ว */
+    color: #ec4899;
+    font-weight: 800;
+    margin: 10px 0;
+    filter: drop-shadow(0 0 10px rgba(236, 72, 153, 0.3));
+}
+
+/* เพิ่มแอนิเมชันให้ชื่อตอนปรากฏ */
+#winner-name {
+    transition: all 0.3s ease;
+}
+
+/* สไตล์เพิ่มเติมสำหรับคำว่า "รอด" ให้เป็นสีเขียวเด่นๆ */
+.survive-text {
+    color: #10b981 !important;
+    font-size: 3rem !important;
+    animation: bounce 0.5s infinite alternate;
+}
+
+@keyframes bounce {
+    from { transform: translateY(0); }
+    to { transform: translateY(-10px); }
+}
