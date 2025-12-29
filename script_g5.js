@@ -256,13 +256,15 @@ function showWinner(data, players) {
     
     announce.style.display = 'block';
     
-    // กำหนดสถานะของผู้เล่นคนปัจจุบัน
+    // แสดงหัวข้อหลักตามสถานะของตัวเอง
     if (myName === data.hostName) {
-        statusEl.innerText = "สรุปผลการเล่น";
+        statusEl.innerText = "สรุปผลการเล่น (เจ้ามือ)";
         statusEl.style.color = "var(--primary)";
     } else {
+        let resultText = "";
         let isWin = false;
         let isDraw = false;
+
         if (myRes.score > hostRes.score) isWin = true;
         else if (myRes.score === hostRes.score) {
             if (myRes.score >= 8) {
@@ -272,23 +274,54 @@ function showWinner(data, players) {
             } else isDraw = true;
         }
 
-        if (isWin) { statusEl.innerText = `คุณชนะ! (x${myRes.multiplier})`; statusEl.style.color = "var(--success)"; }
-        else if (isDraw) { statusEl.innerText = "เสมอเจ้ามือ"; statusEl.style.color = "white"; }
-        else { statusEl.innerText = "คุณแพ้ 💀"; statusEl.style.color = "var(--danger)"; }
+        if (isWin) { 
+            statusEl.innerText = `คุณชนะ! (x${myRes.multiplier})`; 
+            statusEl.style.color = "var(--success)"; 
+        } else if (isDraw) { 
+            statusEl.innerText = "เสมอเจ้ามือ"; 
+            statusEl.style.color = "white"; 
+        } else { 
+            statusEl.innerText = "คุณแพ้ 💀"; 
+            statusEl.style.color = "var(--danger)"; 
+        }
     }
 
-    // สร้างตารางสรุปแต้มของทุกคนในห้อง
+    // --- ส่วนที่ปรับปรุง: สร้างตารางสรุปผลของทุกคนให้เห็นพร้อมกัน ---
     let summaryHtml = `<div style="margin-top:15px; text-align:left; font-size:0.85rem; border-top:1px solid rgba(255,255,255,0.1); padding-top:10px;">`;
+    
     Object.keys(players).forEach(pName => {
         const pRes = analyzeHand(players[pName].hand);
         const isDealer = pName === data.hostName;
+        
+        let statusBadge = "";
+        if (!isDealer) {
+            // คำนวณผลของคนอื่นๆ เทียบกับเจ้ามือ
+            let pWin = false;
+            let pDraw = false;
+            if (pRes.score > hostRes.score) pWin = true;
+            else if (pRes.score === hostRes.score) {
+                if (pRes.score >= 8) {
+                    if (pRes.count === 2 && hostRes.count === 3) pWin = true;
+                    else if (pRes.count === 3 && hostRes.count === 2) pWin = false;
+                    else pDraw = true;
+                } else pDraw = true;
+            }
+            
+            if (pWin) statusBadge = `<span style="color:var(--success)">[ชนะ x${pRes.multiplier}]</span>`;
+            else if (pDraw) statusBadge = `<span style="color:white">[เสมอ]</span>`;
+            else statusBadge = `<span style="color:var(--danger)">[แพ้]</span>`;
+        } else {
+            statusBadge = `<span style="color:var(--primary)">[เจ้ามือ]</span>`;
+        }
+
         summaryHtml += `
-            <div style="display:flex; justify-content:space-between; margin-bottom:5px; color:${isDealer ? 'var(--primary)' : 'white'}; font-weight:${pName === myName ? 'bold' : 'normal'}">
-                <span>${isDealer ? '👑 ' : ''}${pName}${pName === myName ? ' (คุณ)' : ''}:</span>
-                <span>${pRes.score} แต้ม ${pRes.type ? '['+pRes.type+']' : ''}</span>
+            <div style="display:flex; justify-content:space-between; margin-bottom:8px; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom:4px; color:white; font-weight:${pName === myName ? 'bold' : 'normal'}">
+                <span>${isDealer ? '👑 ' : ''}${pName}${pName === myName ? ' (คุณ)' : ''}</span>
+                <span>${pRes.score} แต้ม ${statusBadge}</span>
             </div>
         `;
     });
+    
     summaryHtml += `</div>`;
     infoEl.innerHTML = summaryHtml;
 
