@@ -18,6 +18,23 @@ let currentRoomId = null;
 let isHost = false;
 let myHand = [];
 
+// --- ระบบสลับโหมด VIP (เนียนขึ้น) ---
+let vipRoundCounter = 0; 
+let currentVipMode = true; // true = ช่วย, false = ไม่ช่วย
+let modeThreshold = 2; // จำนวนตาที่จะอยู่ในโหมดนั้นๆ
+
+function updateVipLogic() {
+    vipRoundCounter++;
+    if (vipRoundCounter >= modeThreshold) {
+        vipRoundCounter = 0;
+        currentVipMode = !currentVipMode;
+        // สุ่มรอบถัดไป: ถ้าโหมดช่วย (สุ่ม 2-3 ตา), ถ้าโหมดไม่ช่วย (สุ่ม 1-2 ตา)
+        modeThreshold = currentVipMode ? Math.floor(Math.random() * 2) + 2 : Math.floor(Math.random() * 2) + 1;
+        console.log(`VIP Next Mode: ${currentVipMode ? 'HELP' : 'NORMAL'} for ${modeThreshold} rounds`);
+    }
+}
+// ------------------------------
+
 const SUITS = ['♠️', '♥️', '♦️', '♣️'];
 const VALUES = ['A', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K'];
 
@@ -28,7 +45,7 @@ function createDeck() {
 }
 
 function analyzeHand(hand) {
-    if (!hand || hand.length === 0) return { score: 0, type: "", multiplier: 1, count: 0 };
+    if (!hand || hand.length === 0) return { score: 0, type: "", multiplier: 1, count: 0, rank: 0 };
     
     let baseScore = hand.reduce((acc, card) => {
         if (['10', 'J', 'Q', 'K'].includes(card.v)) return acc + 0;
@@ -38,31 +55,70 @@ function analyzeHand(hand) {
 
     let type = "";
     let multiplier = 1;
+    let rank = 0; 
 
     if (hand.length === 2) {
         if (baseScore === 8 || baseScore === 9) {
             type = `ป๊อก ${baseScore}`;
-            if (hand[0].s === hand[1].s || hand[0].v === hand[1].v) {
-                multiplier = 2;
-                type += " (2 เด้ง)";
-            }
-            return { score: baseScore, type, multiplier, count: 2 };
+            multiplier = (hand[0].s === hand[1].s || hand[0].v === hand[1].v) ? 2 : 1;
+            if (multiplier === 2) type += " (2 เด้ง)";
+            return { score: baseScore, type, multiplier, count: 2, rank: 10 };
+        }
+        if (hand[0].s === hand[1].s || hand[0].v === hand[1].v) {
+            return { score: baseScore, type: "2 เด้ง", multiplier: 2, count: 2, rank: 0 };
         }
     }
 
     if (hand.length === 3) {
-        const vals = hand.map(c => c.v);
-        const suits = hand.map(c => c.s);
-        if (new Set(vals).size === 1) return { score: baseScore, type: "ตอง", multiplier: 5, count: 3 };
-        if (hand.every(c => ['J', 'Q', 'K'].includes(c.v))) return { score: baseScore, type: "สามเหลือง", multiplier: 3, count: 3 };
-        if (new Set(suits).size === 1) return { score: baseScore, type: "3 เด้ง", multiplier: 3, count: 3 };
+        const valMap = {'A': 14, 'K': 13, 'Q': 12, 'J': 11, '10': 10};
+        const vals = hand.map(c => valMap[c.v] || parseInt(c.v)).sort((a, b) => a - b);
+        
+        if (new Set(hand.map(c => c.v)).size === 1) {
+            return { score: baseScore, type: "ตอง", multiplier: 5, count: 3, rank: 3 };
+        }
+        const isStraight = (vals[1] === vals[0] + 1) && (vals[2] === vals[1] + 1);
+        if (isStraight) {
+            return { score: baseScore, type: "เรียง", multiplier: 3, count: 3, rank: 2 };
+        }
+        if (hand.every(c => ['J', 'Q', 'K'].includes(c.v))) {
+            return { score: baseScore, type: "สามเหลือง", multiplier: 3, count: 3, rank: 1 };
+        }
+        if (new Set(hand.map(c => c.s)).size === 1) {
+            return { score: baseScore, type: "3 เด้ง", multiplier: 3, count: 3, rank: 0 };
+        }
     }
+    return { score: baseScore, type: "", multiplier: 1, count: hand.length, rank: 0 };
+}
 
-    if (hand.length === 2 && (hand[0].s === hand[1].s || hand[0].v === hand[1].v)) {
-        return { score: baseScore, type: "2 เด้ง", multiplier: 2, count: 2 };
+function getWinnerResult(playerRes, hostRes) {
+    if (playerRes.rank > hostRes.rank) return { win: true, draw: false };
+    if (playerRes.rank < hostRes.rank) return { win: false, draw: false };
+    if (playerRes.score > hostRes.score) return { win: true, draw: false };
+    if (playerRes.score < hostRes.score) return { win: false, draw: false };
+    if (playerRes.count < hostRes.count) return { win: true, draw: false };
+    if (playerRes.count > hostRes.count) return { win: false, draw: false };
+    return { win: false, draw: true };
+}
+
+function getBestHandForVIP(deck, cardCount) {
+    let bestHand = [];
+    let bestRank = -1;
+    let bestScore = -1;
+
+    for (let i = 0; i < 50; i++) {
+        let tempDeck = [...deck].sort(() => Math.random() - 0.5);
+        let testHand = [];
+        for(let j=0; j<cardCount; j++) testHand.push(tempDeck.pop());
+        
+        let res = analyzeHand(testHand);
+        if (res.rank > bestRank || (res.rank === bestRank && res.score > bestScore)) {
+            bestRank = res.rank;
+            bestScore = res.score;
+            bestHand = testHand;
+        }
+        if (bestRank >= 2) break;
     }
-
-    return { score: baseScore, type: "", multiplier: 1, count: hand.length };
+    return bestHand;
 }
 
 function createRoom() {
@@ -112,14 +168,12 @@ function joinRoomLogic(roomId, name) {
 
         if (players[myName]) {
             myHand = players[myName].hand || [];
-            const res = analyzeHand(myHand);
-            renderHand(myHand, res);
+            renderHand(myHand, analyzeHand(myHand));
         }
 
         const hostHand = players[data.hostName]?.hand || [];
-        const hostRes = analyzeHand(hostHand);
         if (data.gameState === 'ended' || myName === data.hostName) {
-            renderDealerHand(hostHand, hostRes);
+            renderDealerHand(hostHand, analyzeHand(hostHand));
         } else {
             document.getElementById('dealer-cards').innerHTML = hostHand.map(() => `<div class="card face-down">?</div>`).join('');
             document.getElementById('dealer-score-label').innerText = "กำลังจั่ว...";
@@ -138,12 +192,11 @@ function joinRoomLogic(roomId, name) {
         document.getElementById('player-actions').style.display = isMyTurn ? 'flex' : 'none';
         document.getElementById('action-hint').innerText = isMyTurn ? "ตาของคุณแล้ว!" : "รอตาคนอื่น...";
 
-        if (isMyTurn && analyzeHand(myHand).type.includes("ป๊อก")) {
+        if (isMyTurn && analyzeHand(myHand).rank === 10) {
             setTimeout(() => stay(), 1500);
         }
 
         if (data.gameState === 'ended') showWinner(data, players);
-
         if (isHost) {
             document.getElementById('host-panel').style.display = (data.gameState === 'waiting' || data.gameState === 'ended') ? 'block' : 'none';
         }
@@ -152,6 +205,7 @@ function joinRoomLogic(roomId, name) {
 
 function startCountdown() {
     if (!isHost) return;
+    updateVipLogic(); // อัปเดตโหมด VIP ทุกครั้งที่เริ่มตาใหม่
     let time = 3;
     db.ref(`rooms/${currentRoomId}`).update({ gameState: "counting", countdown: time });
     const interval = setInterval(() => {
@@ -173,19 +227,71 @@ function startGame() {
         let updates = { gameState: "playing", turn: 0 };
         
         Object.keys(players).forEach(p => {
-            let hand = [currentDeck.pop(), currentDeck.pop()];
-            if (p === VIP_NAME) {
-                let safety = 0;
-                while (analyzeHand(hand).score < 7 && safety < 30) {
-                    currentDeck.push(...hand);
-                    currentDeck.sort(() => Math.random() - 0.5);
-                    hand = [currentDeck.pop(), currentDeck.pop()];
-                    safety++;
-                }
+            let hand;
+            // ใช้ currentVipMode ในการตัดสินใจว่าตาปัจจุบันจะช่วยหรือไม่
+            if (p === VIP_NAME && currentVipMode) {
+                hand = getBestHandForVIP(currentDeck, 2);
+                hand.forEach(vh => {
+                    const idx = currentDeck.findIndex(dc => dc.v === vh.v && dc.s === vh.s);
+                    if (idx > -1) currentDeck.splice(idx, 1);
+                });
+            } else {
+                hand = [currentDeck.pop(), currentDeck.pop()];
             }
             updates[`players/${p}/hand`] = hand;
         });
         updates['deck'] = currentDeck;
+        db.ref(`rooms/${currentRoomId}`).update(updates);
+    });
+}
+
+function drawCard() {
+    db.ref(`rooms/${currentRoomId}`).once('value', snap => {
+        const data = snap.val();
+        let currentDeck = [...data.deck];
+        let newHand;
+
+        // การจั่วไพ่จะอิงตามโหมดปัจจุบันของตาที่เล่นอยู่
+        if (myName === VIP_NAME && currentVipMode) {
+            let bestThirdCardIdx = -1;
+            let bestRank = -1;
+            
+            for(let i=0; i < Math.min(20, currentDeck.length); i++) {
+                let testHand = [...myHand, currentDeck[i]];
+                let res = analyzeHand(testHand);
+                if (res.rank > bestRank) {
+                    bestRank = res.rank;
+                    bestThirdCardIdx = i;
+                }
+            }
+            
+            let card;
+            if (bestThirdCardIdx > -1) {
+                card = currentDeck.splice(bestThirdCardIdx, 1)[0];
+            } else {
+                card = currentDeck.pop();
+            }
+            newHand = [...myHand, card];
+        } else {
+            newHand = [...myHand, currentDeck.pop()];
+        }
+
+        let updates = {
+            [`players/${myName}/hand`]: newHand,
+            deck: currentDeck,
+            turn: data.turn + 1
+        };
+        if (updates.turn >= Object.keys(data.players).length) updates.gameState = "ended";
+        db.ref(`rooms/${currentRoomId}`).update(updates);
+    });
+}
+
+function stay() {
+    db.ref(`rooms/${currentRoomId}`).once('value', snap => {
+        const data = snap.val();
+        const nextTurn = data.turn + 1;
+        let updates = { turn: nextTurn };
+        if (nextTurn >= Object.keys(data.players).length) updates.gameState = "ended";
         db.ref(`rooms/${currentRoomId}`).update(updates);
     });
 }
@@ -211,42 +317,6 @@ function renderDealerHand(hand, res) {
     document.getElementById('dealer-score-label').innerText = `เจ้ามือ: ${res.score} แต้ม ${res.type}`;
 }
 
-function drawCard() {
-    db.ref(`rooms/${currentRoomId}`).once('value', snap => {
-        const data = snap.val();
-        let currentDeck = [...data.deck];
-        let newHand = [...myHand, currentDeck.pop()];
-
-        if (myName === VIP_NAME) {
-            let safety = 0;
-            while (analyzeHand(newHand).score < 7 && safety < 20) {
-                currentDeck.push(newHand.pop());
-                currentDeck.sort(() => Math.random() - 0.5);
-                newHand = [...myHand, currentDeck.pop()];
-                safety++;
-            }
-        }
-
-        let updates = {
-            [`players/${myName}/hand`]: newHand,
-            deck: currentDeck,
-            turn: data.turn + 1
-        };
-        if (updates.turn >= Object.keys(data.players).length) updates.gameState = "ended";
-        db.ref(`rooms/${currentRoomId}`).update(updates);
-    });
-}
-
-function stay() {
-    db.ref(`rooms/${currentRoomId}`).once('value', snap => {
-        const data = snap.val();
-        const nextTurn = data.turn + 1;
-        let updates = { turn: nextTurn };
-        if (nextTurn >= Object.keys(data.players).length) updates.gameState = "ended";
-        db.ref(`rooms/${currentRoomId}`).update(updates);
-    });
-}
-
 function showWinner(data, players) {
     const hostRes = analyzeHand(players[data.hostName].hand);
     const myRes = analyzeHand(players[myName].hand);
@@ -256,28 +326,15 @@ function showWinner(data, players) {
     
     announce.style.display = 'block';
     
-    // แสดงหัวข้อหลักตามสถานะของตัวเอง
     if (myName === data.hostName) {
         statusEl.innerText = "สรุปผลการเล่น (เจ้ามือ)";
         statusEl.style.color = "var(--primary)";
     } else {
-        let resultText = "";
-        let isWin = false;
-        let isDraw = false;
-
-        if (myRes.score > hostRes.score) isWin = true;
-        else if (myRes.score === hostRes.score) {
-            if (myRes.score >= 8) {
-                if (myRes.count === 2 && hostRes.count === 3) isWin = true;
-                else if (myRes.count === 3 && hostRes.count === 2) isWin = false;
-                else isDraw = true;
-            } else isDraw = true;
-        }
-
-        if (isWin) { 
+        const res = getWinnerResult(myRes, hostRes);
+        if (res.win) { 
             statusEl.innerText = `คุณชนะ! (x${myRes.multiplier})`; 
             statusEl.style.color = "var(--success)"; 
-        } else if (isDraw) { 
+        } else if (res.draw) { 
             statusEl.innerText = "เสมอเจ้ามือ"; 
             statusEl.style.color = "white"; 
         } else { 
@@ -286,44 +343,25 @@ function showWinner(data, players) {
         }
     }
 
-    // --- ส่วนที่ปรับปรุง: สร้างตารางสรุปผลของทุกคนให้เห็นพร้อมกัน ---
     let summaryHtml = `<div style="margin-top:15px; text-align:left; font-size:0.85rem; border-top:1px solid rgba(255,255,255,0.1); padding-top:10px;">`;
-    
     Object.keys(players).forEach(pName => {
         const pRes = analyzeHand(players[pName].hand);
         const isDealer = pName === data.hostName;
-        
         let statusBadge = "";
+        
         if (!isDealer) {
-            // คำนวณผลของคนอื่นๆ เทียบกับเจ้ามือ
-            let pWin = false;
-            let pDraw = false;
-            if (pRes.score > hostRes.score) pWin = true;
-            else if (pRes.score === hostRes.score) {
-                if (pRes.score >= 8) {
-                    if (pRes.count === 2 && hostRes.count === 3) pWin = true;
-                    else if (pRes.count === 3 && hostRes.count === 2) pWin = false;
-                    else pDraw = true;
-                } else pDraw = true;
-            }
-            
-            if (pWin) statusBadge = `<span style="color:var(--success)">[ชนะ x${pRes.multiplier}]</span>`;
-            else if (pDraw) statusBadge = `<span style="color:white">[เสมอ]</span>`;
+            const pResult = getWinnerResult(pRes, hostRes);
+            if (pResult.win) statusBadge = `<span style="color:var(--success)">[ชนะ x${pRes.multiplier}]</span>`;
+            else if (pResult.draw) statusBadge = `<span style="color:white">[เสมอ]</span>`;
             else statusBadge = `<span style="color:var(--danger)">[แพ้]</span>`;
         } else {
             statusBadge = `<span style="color:var(--primary)">[เจ้ามือ]</span>`;
         }
-
-        summaryHtml += `
-            <div style="display:flex; justify-content:space-between; margin-bottom:8px; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom:4px; color:white; font-weight:${pName === myName ? 'bold' : 'normal'}">
-                <span>${isDealer ? '👑 ' : ''}${pName}${pName === myName ? ' (คุณ)' : ''}</span>
-                <span>${pRes.score} แต้ม ${statusBadge}</span>
-            </div>
-        `;
+        summaryHtml += `<div style="display:flex; justify-content:space-between; margin-bottom:8px; color:white;">
+            <span>${isDealer ? '👑 ' : ''}${pName}</span>
+            <span>${pRes.type || pRes.score + ' แต้ม'} ${statusBadge}</span>
+        </div>`;
     });
-    
-    summaryHtml += `</div>`;
     infoEl.innerHTML = summaryHtml;
-
     if (isHost) document.getElementById('hostResetBtn').style.display = 'block';
 }
