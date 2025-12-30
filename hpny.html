@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Happy New Year 2026 🎇</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;600&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <div id="login-screen">
+        <div class="bg-glow"></div>
+        <div class="login-box">
+            <button class="btn-retry" onclick="window.location.href='index.html'" style="background: linear-gradient(45deg, #00d4ff, #7000ff); margin-top: 10px;">
+        กลับไปหน้า Party Hub 🍻
+    </button>
+            <div class="icon">🎁</div>
+            <h2>สวัสดีปีใหม่ 2026</h2>
+            <p>รหัสผ่านจะโชว์ที่หน้าจอทีวีในวันที่ 1/1/2026</p>
+            <p>กรุณาใส่รหัสผ่านเพื่อเปิดกล่องความสุข</p>
+            <input type="text" id="passwordInput" placeholder="รหัสผ่าน..." autocomplete="off" onkeypress="if(event.key === 'Enter') checkPassword()">
+            <button onclick="checkPassword()">เปิดกล่องของขวัญ ✨</button>
+            <p id="error-msg">รหัสผ่านไม่ถูกต้อง!</p>
+        </div>
+    </div>
+
+    <div id="main-content">
+        <canvas id="canvas"></canvas>
+        <div class="wish-container">
+            <div class="glass-card">
+                <h1 class="title">HAPPY NEW YEAR 2026</h1>
+                <div class="separator"></div>
+                <div id="wish-text"></div>
+                <button class="btn-retry" onclick="location.reload()">เปิดอีกรอบ 🎁</button>
+                <br>
+                <button class="btn-retry" onclick="window.location.href='index.html'" style="background: linear-gradient(45deg, #00d4ff, #7000ff); margin-top: 10px;">
+        กลับไปหน้า Party Hub 🍻
+    </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
