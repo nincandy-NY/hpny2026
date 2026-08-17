@@ -10,7 +10,7 @@ let stats = {};
 let historyData = [];
 
 function goHome() {
-        window.location.href = "https://nincandy-ny.github.io/hpny2026/"; // เปลี่ยนจาก reload เป็นกลับหน้าหลัก
+        window.location.href = "https://nincxndy.github.io/hpny2026/"; // เปลี่ยนจาก reload เป็นกลับหน้าหลัก
     }
 
 function createRoom() {
